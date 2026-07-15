@@ -58,23 +58,23 @@ export default function FolderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fff8ed] to-[#f0fdf9] font-sans"
-      style={{ backgroundImage: 'radial-gradient(circle at 80% 10%, #fde68a44 0%, transparent 40%), radial-gradient(circle at 5% 90%, #99f6e444 0%, transparent 40%)' }}>
+    <div className="min-h-screen bg-gradient-to-br from-[#fff5f5] to-[#f0f4f8] font-sans"
+      style={{ backgroundImage: 'radial-gradient(circle at 80% 10%, #ffe4e644 0%, transparent 40%), radial-gradient(circle at 5% 90%, #dbeafe44 0%, transparent 40%)' }}>
 
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/60 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center gap-4">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-sm">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-sm">
             <GraduationCap className="w-5 h-5" />
           </div>
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-medium flex-1">
-            <button onClick={() => navigate('/')} className="hover:text-amber-600 transition-colors cursor-pointer flex items-center gap-1">
+            <button onClick={() => navigate('/')} className="hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-1">
               <ArrowLeft className="w-3.5 h-3.5" />
               Home
             </button>
             <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-            <button onClick={() => navigate('/blog')} className="hover:text-amber-600 transition-colors cursor-pointer">
+            <button onClick={() => navigate('/blog')} className="hover:text-rose-600 transition-colors cursor-pointer">
               Study Materials
             </button>
             <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
@@ -88,7 +88,7 @@ export default function FolderPage() {
       <main className="max-w-6xl mx-auto px-6 py-10">
         {loading && (
           <div className="flex flex-col items-center justify-center py-32 gap-3 text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
             <p className="text-sm">Loading folder...</p>
           </div>
         )}
@@ -97,7 +97,7 @@ export default function FolderPage() {
           <div className="flex flex-col items-center justify-center py-32 gap-4">
             <FolderX className="w-12 h-12 text-red-300" />
             <p className="text-slate-600 font-semibold">{error}</p>
-            <button onClick={() => navigate('/blog')} className="px-4 py-2 bg-amber-500 text-white text-sm font-semibold rounded-lg cursor-pointer">← Back</button>
+            <button onClick={() => navigate('/blog')} className="px-4 py-2 bg-rose-500 text-white text-sm font-semibold rounded-lg cursor-pointer">← Back</button>
           </div>
         )}
 
@@ -106,7 +106,7 @@ export default function FolderPage() {
             {/* Folder hero */}
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
               <div className="flex items-center gap-4 mb-3">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center shadow-lg">
                   <FolderOpen className="w-7 h-7 text-white" />
                 </div>
                 <div>
@@ -126,8 +126,8 @@ export default function FolderPage() {
                   onClick={() => setFilter(tab)}
                   className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     filter === tab
-                      ? 'bg-amber-500 text-white shadow-md shadow-amber-400/30'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-amber-300 hover:text-amber-600'
+                      ? 'bg-rose-500 text-white shadow-md shadow-rose-400/30'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-rose-300 hover:text-rose-600'
                   }`}
                 >
                   {tab === 'all' ? `All (${data.files.length})` : tab === 'pdf' ? `PDF (${data.files.filter(f => f.fileType === 'pdf').length})` : `Images (${data.files.filter(f => f.fileType === 'image').length})`}
@@ -144,7 +144,7 @@ export default function FolderPage() {
               <div className="flex flex-col items-center justify-center py-24 gap-3">
                 <FileText className="w-10 h-10 text-slate-300" />
                 <p className="text-slate-500 font-semibold">No files in this folder yet</p>
-                <button onClick={() => navigate('/admin')} className="text-sm text-amber-600 hover:underline cursor-pointer">
+                <button onClick={() => navigate('/admin')} className="text-sm text-rose-600 hover:underline cursor-pointer">
                   Upload files as admin →
                 </button>
               </div>
@@ -162,18 +162,18 @@ export default function FolderPage() {
                 >
                   {/* File icon + type badge */}
                   <div className="flex items-start justify-between mb-3">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${file.fileType === 'pdf' ? 'bg-gradient-to-br from-red-400 to-rose-500' : 'bg-gradient-to-br from-teal-400 to-emerald-500'}`}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${file.fileType === 'pdf' ? 'bg-gradient-to-br from-red-400 to-rose-500' : 'bg-gradient-to-br from-blue-400 to-indigo-500'}`}>
                       {file.fileType === 'pdf'
                         ? <FileText className="w-6 h-6 text-white" />
                         : <Image className="w-6 h-6 text-white" />
                       }
                     </div>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full uppercase tracking-wider ${file.fileType === 'pdf' ? 'bg-red-50 text-red-600' : 'bg-teal-50 text-teal-600'}`}>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full uppercase tracking-wider ${file.fileType === 'pdf' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
                       {file.fileType}
                     </span>
                   </div>
 
-                  <h3 className="font-display font-bold text-slate-900 text-base mb-1 line-clamp-2 group-hover:text-amber-700 transition-colors">{file.title}</h3>
+                  <h3 className="font-display font-bold text-slate-900 text-base mb-1 line-clamp-2 group-hover:text-rose-700 transition-colors">{file.title}</h3>
                   {file.description && (
                     <p className="text-sm text-slate-500 line-clamp-2 mb-4">{file.description}</p>
                   )}
@@ -183,7 +183,7 @@ export default function FolderPage() {
                   <div className="flex gap-2 pt-3 border-t border-slate-100">
                     <button
                       onClick={() => setViewer(file)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       View
@@ -207,7 +207,7 @@ export default function FolderPage() {
       <footer className="border-t border-slate-200/60 bg-white/40 mt-16">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-[10px] font-mono text-slate-400">
           <span>© 2026 Dr. M. Sathyakala — IRTT</span>
-          <button onClick={() => navigate('/blog')} className="hover:text-teal-600 transition-colors cursor-pointer">← All Folders</button>
+          <button onClick={() => navigate('/blog')} className="hover:text-blue-600 transition-colors cursor-pointer">← All Folders</button>
         </div>
       </footer>
 
@@ -231,8 +231,8 @@ export default function FolderPage() {
               {/* Modal header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${viewer.fileType === 'pdf' ? 'bg-red-100' : 'bg-teal-100'}`}>
-                    {viewer.fileType === 'pdf' ? <FileText className="w-4 h-4 text-red-600" /> : <Image className="w-4 h-4 text-teal-600" />}
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${viewer.fileType === 'pdf' ? 'bg-red-100' : 'bg-blue-100'}`}>
+                    {viewer.fileType === 'pdf' ? <FileText className="w-4 h-4 text-red-600" /> : <Image className="w-4 h-4 text-blue-600" />}
                   </div>
                   <div>
                     <p className="font-semibold text-slate-900 text-sm">{viewer.title}</p>
@@ -242,7 +242,7 @@ export default function FolderPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleDownload(viewer)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     Download

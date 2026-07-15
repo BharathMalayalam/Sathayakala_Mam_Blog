@@ -45,7 +45,7 @@ export default function DropdownMenu({ onNavigate }: DropdownMenuProps) {
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="absolute right-0 mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50 origin-top-right overflow-hidden"
           >
-            <div className="px-3.5 py-1 text-[10px] font-bold font-mono tracking-wider text-teal-600 uppercase border-b border-slate-100 mb-1">
+            <div className="px-3.5 py-1 text-[10px] font-bold font-mono tracking-wider text-blue-600 uppercase border-b border-slate-100 mb-1">
               Portal Access
             </div>
             
@@ -61,16 +61,16 @@ export default function DropdownMenu({ onNavigate }: DropdownMenuProps) {
               <Home className="w-4 h-4 text-slate-400 group-hover:text-primary-500 transition-colors" />
               <span>Home</span>
             </button>
-
+ 
             <button
               id="nav-blog-btn"
               onClick={() => {
                 navigate('/blog');
                 setIsOpen(false);
               }}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-700 hover:text-amber-600 hover:bg-amber-50 transition-colors text-left font-sans cursor-pointer group"
+              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-700 hover:text-rose-600 hover:bg-rose-50 transition-colors text-left font-sans cursor-pointer group"
             >
-              <FolderOpen className="w-4 h-4 text-slate-400 group-hover:text-amber-500 transition-colors" />
+              <FolderOpen className="w-4 h-4 text-slate-400 group-hover:text-rose-500 transition-colors" />
               <span>Blogs</span>
             </button>
             <div className="h-px bg-slate-100 my-1" />

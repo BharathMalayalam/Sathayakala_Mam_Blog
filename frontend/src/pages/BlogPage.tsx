@@ -15,8 +15,8 @@ interface Folder {
 }
 
 const FOLDER_COLORS = [
-  { bg: 'from-amber-400 to-orange-500', light: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-700' },
-  { bg: 'from-teal-400 to-emerald-500', light: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-700', badge: 'bg-teal-100 text-teal-700' },
+  { bg: 'from-rose-400 to-rose-600', light: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', badge: 'bg-rose-100 text-rose-700' },
+  { bg: 'from-emerald-400 to-emerald-600', light: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badge: 'bg-emerald-100 text-emerald-700' },
   { bg: 'from-violet-400 to-purple-500', light: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-700', badge: 'bg-violet-100 text-violet-700' },
   { bg: 'from-blue-400 to-sky-500', light: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700' },
   { bg: 'from-rose-400 to-pink-500', light: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', badge: 'bg-rose-100 text-rose-700' },
@@ -50,25 +50,25 @@ export default function BlogPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fff8ed] to-[#f0fdf9] font-sans"
-      style={{ backgroundImage: 'radial-gradient(circle at 80% 10%, #fde68a44 0%, transparent 40%), radial-gradient(circle at 5% 90%, #99f6e444 0%, transparent 40%)' }}>
+    <div className="min-h-screen bg-gradient-to-br from-[#fff5f5] to-[#f0f4f8] font-sans"
+      style={{ backgroundImage: 'radial-gradient(circle at 80% 10%, #ffe4e644 0%, transparent 40%), radial-gradient(circle at 5% 90%, #dbeafe44 0%, transparent 40%)' }}>
 
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/60 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-sm">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-extrabold text-slate-900 font-display leading-none">M. Sathyakala<span className="text-teal-600">.</span></p>
+              <p className="text-sm font-extrabold text-slate-900 font-display leading-none">M. Sathyakala<span className="text-blue-600 font-bold">.</span></p>
               <p className="text-[10px] text-slate-400 font-mono mt-0.5">Academic Library</p>
             </div>
           </div>
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-            <button onClick={() => navigate('/')} className="hover:text-amber-600 transition-colors flex items-center gap-1 cursor-pointer">
+            <button onClick={() => navigate('/')} className="hover:text-rose-600 transition-colors flex items-center gap-1 cursor-pointer">
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Home</span>
             </button>
@@ -85,12 +85,12 @@ export default function BlogPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10 text-center"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 border border-amber-200 rounded-full text-sm font-semibold text-amber-700 mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-100 border border-rose-200 rounded-full text-sm font-semibold text-rose-700 mb-4">
             <BookOpen className="w-4 h-4" />
             Academic Content Library
           </div>
           <h1 className="text-4xl sm:text-5xl font-display font-extrabold text-slate-900 mb-3">
-            Study <span className="text-amber-500" style={{ textDecoration: 'underline', textDecorationColor: '#f59e0b', textUnderlineOffset: '6px' }}>Materials</span>
+            Study <span className="text-rose-500" style={{ textDecoration: 'underline', textDecorationColor: '#be123c', textUnderlineOffset: '6px' }}>Materials</span>
           </h1>
           <p className="text-slate-500 text-base max-w-xl mx-auto">
             Browse folders, access PDFs and notes organized by subject. Click a folder to explore its contents.
@@ -106,14 +106,14 @@ export default function BlogPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search folders..."
-            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 shadow-sm"
+            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-rose-400/40 focus:border-rose-400 shadow-sm"
           />
         </motion.div>
 
         {/* State: loading */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
             <p className="text-sm">Loading folders...</p>
           </div>
         )}
@@ -128,7 +128,7 @@ export default function BlogPage() {
             <p className="text-sm text-slate-400 max-w-sm text-center">{error}</p>
             <button
               onClick={() => navigate('/admin')}
-              className="px-4 py-2 bg-amber-500 text-white text-sm font-semibold rounded-lg hover:bg-amber-600 transition-colors cursor-pointer"
+              className="px-4 py-2 bg-rose-500 text-white text-sm font-semibold rounded-lg hover:bg-rose-600 transition-colors cursor-pointer"
             >
               Go to Admin to Add Content
             </button>
@@ -138,8 +138,8 @@ export default function BlogPage() {
         {/* State: empty */}
         {!loading && !error && filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center">
-              <FolderOpen className="w-8 h-8 text-amber-400" />
+            <div className="w-16 h-16 rounded-2xl bg-rose-50 flex items-center justify-center">
+              <FolderOpen className="w-8 h-8 text-rose-400" />
             </div>
             <p className="text-slate-700 font-semibold text-lg">No folders found</p>
             <p className="text-sm text-slate-400">
@@ -201,7 +201,7 @@ export default function BlogPage() {
       <footer className="border-t border-slate-200/60 bg-white/40 mt-16">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-[10px] font-mono text-slate-400">
           <span>© 2026 Dr. M. Sathyakala — IRTT</span>
-          <button onClick={() => navigate('/')} className="hover:text-teal-600 transition-colors cursor-pointer">← Back to Portfolio</button>
+          <button onClick={() => navigate('/')} className="hover:text-blue-600 transition-colors cursor-pointer">← Back to Portfolio</button>
         </div>
       </footer>
     </div>
