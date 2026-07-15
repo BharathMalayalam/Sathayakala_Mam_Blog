@@ -208,8 +208,8 @@ export default function AdminPage() {
               </button>
             </form>
             <div className="mt-4 pt-4 border-t border-white/10 text-center">
-              <button onClick={() => navigate('/blog')} className="text-xs text-slate-400 hover:text-rose-400 transition-colors cursor-pointer">
-                ← Back to Study Materials
+              <button onClick={() => navigate('/')} className="text-xs text-slate-400 hover:text-rose-400 transition-colors cursor-pointer">
+                ← Back to Home
               </button>
             </div>
           </div>
