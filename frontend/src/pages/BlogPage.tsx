@@ -11,6 +11,8 @@ interface Folder {
   name: string;
   description: string;
   fileCount: number;
+  subfolderCount?: number;
+  parentFolderId?: string | null;
   createdAt: string;
 }
 
@@ -44,10 +46,12 @@ export default function BlogPage() {
       });
   }, []);
 
-  const filtered = folders.filter(f =>
-    f.name.toLowerCase().includes(search.toLowerCase()) ||
-    f.description.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = folders
+    .filter(f => !f.parentFolderId)
+    .filter(f =>
+      f.name.toLowerCase().includes(search.toLowerCase()) ||
+      f.description.toLowerCase().includes(search.toLowerCase())
+    );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff5f5] to-[#f0f4f8] font-sans"
@@ -174,7 +178,7 @@ export default function BlogPage() {
                         <FolderOpen className="w-6 h-6 text-white" />
                       </div>
                       <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${color.badge}`}>
-                        {folder.fileCount} file{folder.fileCount !== 1 ? 's' : ''}
+                        {folder.subfolderCount ? `${folder.subfolderCount} dir${folder.subfolderCount > 1 ? 's' : ''} • ` : ''}{folder.fileCount} file{folder.fileCount !== 1 ? 's' : ''}
                       </span>
                     </div>
 

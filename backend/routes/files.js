@@ -34,20 +34,32 @@ router.post('/:folderId', requireAuth, upload.single('file'), async (req, res) =
   try {
     const folder = await Folder.findById(req.params.folderId);
     if (!folder) return res.status(404).json({ error: 'Folder not found' });
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-    const { title, description } = req.body;
+    const { title, description, linkUrl } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
 
-    const isImage = req.file.mimetype.startsWith('image/');
-    const fileType = isImage ? 'image' : 'pdf';
-    const fileUrl = `/uploads/${req.file.filename}`;
+    let fileUrl = '';
+    let fileName = '';
+    let fileType = 'pdf';
+
+    if (req.file) {
+      const isImage = req.file.mimetype.startsWith('image/');
+      fileType = isImage ? 'image' : 'pdf';
+      fileUrl = `/uploads/${req.file.filename}`;
+      fileName = req.file.originalname;
+    } else if (linkUrl) {
+      fileUrl = linkUrl.trim();
+      fileName = 'Google Drive Link';
+      fileType = 'pdf';
+    } else {
+      return res.status(400).json({ error: 'No file uploaded and no link provided' });
+    }
 
     const file = new File({
       title: title.trim(),
       description: description?.trim() || '',
       fileUrl,
-      fileName: req.file.originalname,
+      fileName,
       fileType,
       folderId: req.params.folderId,
     });
@@ -63,8 +75,10 @@ router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const file = await File.findByIdAndDelete(req.params.id);
     if (!file) return res.status(404).json({ error: 'File not found' });
-    const filePath = path.join(uploadsDir, path.basename(file.fileUrl));
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    if (file.fileUrl && file.fileUrl.startsWith('/uploads/')) {
+      const filePath = path.join(uploadsDir, path.basename(file.fileUrl));
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    }
     res.json({ message: 'File deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });

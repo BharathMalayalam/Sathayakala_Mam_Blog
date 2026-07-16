@@ -17,9 +17,24 @@ interface FileItem {
   createdAt: string;
 }
 
+interface Subfolder {
+  _id: string;
+  name: string;
+  description: string;
+  fileCount: number;
+  subfolderCount?: number;
+}
+
+interface FolderPathNode {
+  _id: string;
+  name: string;
+}
+
 interface FolderData {
-  folder: { _id: string; name: string; description: string };
+  folder: { _id: string; name: string; description: string; parentFolderId?: string | null };
   files: FileItem[];
+  subfolders: Subfolder[];
+  path: FolderPathNode[];
 }
 
 export default function FolderPage() {
@@ -32,6 +47,7 @@ export default function FolderPage() {
   const [viewer, setViewer] = useState<FileItem | null>(null);
 
   useEffect(() => {
+    setLoading(true);
     fetch(`/api/folders/${id}`)
       .then(r => r.json())
       .then(d => {
@@ -77,10 +93,26 @@ export default function FolderPage() {
             <button onClick={() => navigate('/blog')} className="hover:text-rose-600 transition-colors cursor-pointer">
               Study Materials
             </button>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-            <span className="text-slate-800 font-semibold truncate max-w-[150px]">
-              {data?.folder.name ?? 'Loading...'}
-            </span>
+            {data?.path?.map((p, idx) => (
+              <span key={p._id} className="flex items-center gap-1.5">
+                <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+                {idx === data.path.length - 1 ? (
+                  <span className="text-slate-800 font-semibold truncate max-w-[150px]">
+                    {p.name}
+                  </span>
+                ) : (
+                  <button onClick={() => navigate(`/blog/folder/${p._id}`)} className="hover:text-rose-600 transition-colors cursor-pointer">
+                    {p.name}
+                  </button>
+                )}
+              </span>
+            ))}
+            {!data && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+                <span className="text-slate-400">Loading...</span>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -139,66 +171,121 @@ export default function FolderPage() {
               </div>
             </div>
 
+            {/* Subfolders section */}
+            {data.subfolders && data.subfolders.length > 0 && (
+              <div className="mb-10">
+                <h2 className="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                  <FolderOpen className="w-3.5 h-3.5 text-slate-400" />
+                  Subfolders ({data.subfolders.length})
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {data.subfolders.map((sub, i) => (
+                    <motion.div
+                      key={sub._id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      onClick={() => navigate(`/blog/folder/${sub._id}`)}
+                      className="group cursor-pointer bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f43f5e] to-[#e11d48] flex items-center justify-center text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                          <FolderOpen className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-display font-bold text-slate-900 text-sm truncate group-hover:text-rose-700 transition-colors">
+                            {sub.name}
+                          </h3>
+                          {sub.description && (
+                            <p className="text-[11px] text-slate-400 truncate max-w-[180px]">{sub.description}</p>
+                          )}
+                        </div>
+                      </div>
+                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-rose-50 text-rose-700 rounded-full shrink-0">
+                        {sub.subfolderCount ? `${sub.subfolderCount} dir${sub.subfolderCount > 1 ? 's' : ''} • ` : ''}{sub.fileCount} file{sub.fileCount !== 1 ? 's' : ''}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Empty state */}
-            {filtered.length === 0 && (
+            {(data.subfolders || []).length === 0 && filtered.length === 0 && (
               <div className="flex flex-col items-center justify-center py-24 gap-3">
-                <FileText className="w-10 h-10 text-slate-300" />
-                <p className="text-slate-500 font-semibold">No files in this folder yet</p>
+                <FolderX className="w-10 h-10 text-slate-300" />
+                <p className="text-slate-500 font-semibold">This folder is empty</p>
                 <button onClick={() => navigate('/admin')} className="text-sm text-rose-600 hover:underline cursor-pointer">
-                  Upload files as admin →
+                  Add subfolders or upload files as admin →
                 </button>
               </div>
             )}
 
             {/* Files grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filtered.map((file, i) => (
-                <motion.div
-                  key={file._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
-                >
-                  {/* File icon + type badge */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${file.fileType === 'pdf' ? 'bg-gradient-to-br from-red-400 to-rose-500' : 'bg-gradient-to-br from-blue-400 to-indigo-500'}`}>
-                      {file.fileType === 'pdf'
-                        ? <FileText className="w-6 h-6 text-white" />
-                        : <Image className="w-6 h-6 text-white" />
-                      }
-                    </div>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full uppercase tracking-wider ${file.fileType === 'pdf' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
-                      {file.fileType}
-                    </span>
-                  </div>
-
-                  <h3 className="font-display font-bold text-slate-900 text-base mb-1 line-clamp-2 group-hover:text-rose-700 transition-colors">{file.title}</h3>
-                  {file.description && (
-                    <p className="text-sm text-slate-500 line-clamp-2 mb-4">{file.description}</p>
-                  )}
-                  {!file.description && <div className="mb-4" />}
-
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-3 border-t border-slate-100">
-                    <button
-                      onClick={() => setViewer(file)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+            {filtered.length > 0 && (
+              <div>
+                {data.subfolders && data.subfolders.length > 0 && (
+                  <h2 className="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1.5 mt-8">
+                    <FileText className="w-3.5 h-3.5 text-slate-400" />
+                    Files ({filtered.length})
+                  </h2>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filtered.map((file, i) => (
+                    <motion.div
+                      key={file._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="group bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                      View
-                    </button>
-                    <button
-                      onClick={() => handleDownload(file)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Download
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                      {/* File icon + type badge */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${file.fileType === 'pdf' ? 'bg-gradient-to-br from-red-400 to-rose-500' : 'bg-gradient-to-br from-blue-400 to-indigo-500'}`}>
+                          {file.fileType === 'pdf'
+                            ? <FileText className="w-6 h-6 text-white" />
+                            : <Image className="w-6 h-6 text-white" />
+                          }
+                        </div>
+                        <span className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full uppercase tracking-wider ${file.fileType === 'pdf' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                          {file.fileType}
+                        </span>
+                      </div>
+
+                      <h3 className="font-display font-bold text-slate-900 text-base mb-1 line-clamp-2 group-hover:text-rose-700 transition-colors">{file.title}</h3>
+                      {file.description && (
+                        <p className="text-sm text-slate-500 line-clamp-2 mb-4">{file.description}</p>
+                      )}
+                      {!file.description && <div className="mb-4" />}
+
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-3 border-t border-slate-100">
+                        <button
+                          onClick={() => {
+                            if (file.fileUrl.startsWith('http')) {
+                              window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
+                            } else {
+                              setViewer(file);
+                            }
+                          }}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleDownload(file)}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          Download
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </main>

@@ -102,12 +102,9 @@ dns.lookup = function (hostname, options, callback) {
     options = {};
   }
   
-  // Hardcode dns.google to resolve directly to 8.8.8.8 to avoid recursive DNS lookups
+  // Resolve dns.google using originalLookup to avoid recursive DNS lookups
   if (hostname === 'dns.google') {
-    if (options && options.all) {
-      return callback(null, [{ address: '8.8.8.8', family: 4 }]);
-    }
-    return callback(null, '8.8.8.8', 4);
+    return originalLookup(hostname, options, callback);
   }
   
   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
