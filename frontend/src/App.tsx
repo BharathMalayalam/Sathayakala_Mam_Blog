@@ -24,7 +24,6 @@ import { CONTACT_INFO } from './data';
 
 // Component imports
 import DropdownMenu from './components/DropdownMenu';
-import ProfileSection from './components/ProfileSection';
 
 // Page imports
 import BlogPage from './pages/BlogPage';
@@ -181,8 +180,6 @@ export default function App() {
               </motion.div>
             </div>
 
-            {/* Right side: Interactive Profile Image Display */}
-            <ProfileSection />
           </main>
  
           {/* FIXED BLOG CIRCULAR BUTTON IN BOTTOM RIGHT CORNER (Desktop only) */}

@@ -50,14 +50,36 @@ const deleteFolderRecursive = async (folderId) => {
 router.get('/', async (req, res) => {
   try {
     const folders = await Folder.find().sort({ createdAt: -1 });
-    // Attach file and subfolder counts to each folder
-    const foldersWithCount = await Promise.all(
-      folders.map(async (folder) => {
-        const count = await File.countDocuments({ folderId: folder._id });
-        const subfolderCount = await Folder.countDocuments({ parentFolderId: folder._id });
-        return { ...folder.toObject(), fileCount: count, subfolderCount };
-      })
-    );
+    
+    // Bulk count files and subfolders using MongoDB aggregation to avoid N+1 queries
+    const fileCounts = await File.aggregate([
+      { $group: { _id: '$folderId', count: { $sum: 1 } } }
+    ]);
+    
+    const subfolderCounts = await Folder.aggregate([
+      { $match: { parentFolderId: { $ne: null } } },
+      { $group: { _id: '$parentFolderId', count: { $sum: 1 } } }
+    ]);
+    
+    const fileCountMap = {};
+    fileCounts.forEach(item => {
+      if (item._id) fileCountMap[item._id.toString()] = item.count;
+    });
+    
+    const subfolderCountMap = {};
+    subfolderCounts.forEach(item => {
+      if (item._id) subfolderCountMap[item._id.toString()] = item.count;
+    });
+    
+    const foldersWithCount = folders.map(folder => {
+      const idStr = folder._id.toString();
+      return {
+        ...folder.toObject(),
+        fileCount: fileCountMap[idStr] || 0,
+        subfolderCount: subfolderCountMap[idStr] || 0
+      };
+    });
+    
     res.json(foldersWithCount);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -72,13 +94,37 @@ router.get('/:id', async (req, res) => {
     const files = await File.find({ folderId: req.params.id }).sort({ createdAt: -1 });
     const subfolders = await Folder.find({ parentFolderId: req.params.id }).sort({ createdAt: -1 });
     
-    const subfoldersWithCount = await Promise.all(
-      subfolders.map(async (sf) => {
-        const count = await File.countDocuments({ folderId: sf._id });
-        const subfolderCount = await Folder.countDocuments({ parentFolderId: sf._id });
-        return { ...sf.toObject(), fileCount: count, subfolderCount };
-      })
-    );
+    const subfolderIds = subfolders.map(sf => sf._id);
+    
+    // Bulk count files and subfolders for child subfolders
+    const fileCounts = await File.aggregate([
+      { $match: { folderId: { $in: subfolderIds } } },
+      { $group: { _id: '$folderId', count: { $sum: 1 } } }
+    ]);
+    
+    const subfolderCounts = await Folder.aggregate([
+      { $match: { parentFolderId: { $in: subfolderIds } } },
+      { $group: { _id: '$parentFolderId', count: { $sum: 1 } } }
+    ]);
+    
+    const fileCountMap = {};
+    fileCounts.forEach(item => {
+      if (item._id) fileCountMap[item._id.toString()] = item.count;
+    });
+    
+    const subfolderCountMap = {};
+    subfolderCounts.forEach(item => {
+      if (item._id) subfolderCountMap[item._id.toString()] = item.count;
+    });
+    
+    const subfoldersWithCount = subfolders.map(sf => {
+      const idStr = sf._id.toString();
+      return {
+        ...sf.toObject(),
+        fileCount: fileCountMap[idStr] || 0,
+        subfolderCount: subfolderCountMap[idStr] || 0
+      };
+    });
 
     const folderPath = await buildFolderPath(req.params.id);
 

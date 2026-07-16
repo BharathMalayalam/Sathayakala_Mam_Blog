@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, LogIn, CircleUser, FolderOpen } from 'lucide-react';
+import { Home, LogIn, Menu, FolderOpen } from 'lucide-react';
 
 interface DropdownMenuProps {
   onNavigate: (section: 'home' | 'about' | 'blog' | 'contact' | 'signin') => void;
@@ -43,13 +43,11 @@ export default function DropdownMenu({ onNavigate }: DropdownMenuProps) {
       <button
         id="dropdown-profile-btn"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 p-1.5 pr-2.5 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-full shadow-sm hover:shadow transition-all duration-300 text-slate-700 font-medium group cursor-pointer"
+        className="flex items-center gap-2 px-3 py-1.5 bg-black/40 hover:bg-black/60 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-300 text-white font-medium group cursor-pointer shadow-lg backdrop-blur-md"
         aria-label="User profile menu"
       >
-        <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-          <CircleUser className="w-5 h-5" />
-        </div>
-        <span className="text-xs font-semibold tracking-wide text-slate-700">
+        <Menu className="w-4 h-4 text-white/80 group-hover:scale-105 transition-transform" />
+        <span className="text-sm font-semibold tracking-wide text-white">
           Menu
         </span>
       </button>
