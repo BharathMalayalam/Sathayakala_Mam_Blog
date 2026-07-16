@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { getApiUrl } from '../utils';
 import {
   LogIn, LogOut, FolderPlus, Upload, Trash2, FolderOpen,
   FileText, Image, CheckCircle, XCircle, Loader2, GraduationCap,
@@ -65,11 +66,11 @@ export default function AdminPage() {
   };
 
   const authFetch = (url: string, opts: RequestInit = {}) =>
-    fetch(url, { ...opts, headers: { ...((opts.headers as Record<string, string>) || {}), Authorization: `Bearer ${token}` } });
+    fetch(getApiUrl(url), { ...opts, headers: { ...((opts.headers as Record<string, string>) || {}), Authorization: `Bearer ${token}` } });
 
   const loadFolders = () => {
     setFoldersLoading(true);
-    fetch('/api/folders')
+    fetch(getApiUrl('/api/folders'))
       .then(r => r.json())
       .then(d => { if (Array.isArray(d)) setFolders(d); setFoldersLoading(false); })
       .catch(() => setFoldersLoading(false));
@@ -82,7 +83,7 @@ export default function AdminPage() {
     setLoginLoading(true);
     setLoginError('');
     try {
-      const r = await fetch('/api/auth/login', {
+      const r = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
@@ -177,7 +178,7 @@ export default function AdminPage() {
   const loadFolderFiles = async (folder: Folder) => {
     setFolderFilesLoading(true);
     try {
-      const r = await fetch(`/api/folders/${folder._id}`);
+      const r = await fetch(getApiUrl(`/api/folders/${folder._id}`));
       const d = await r.json();
       setOpenFolder({
         folder: d.folder || folder,
@@ -720,7 +721,7 @@ export default function AdminPage() {
                             <p className="text-[10px] text-slate-400 truncate">{file.fileName}</p>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
-                            <a href={file.fileUrl} target="_blank" rel="noreferrer"
+                            <a href={getApiUrl(file.fileUrl)} target="_blank" rel="noreferrer"
                               className="p-1.5 hover:bg-blue-100 rounded-md transition-colors text-slate-300 hover:text-blue-500 cursor-pointer" title="View file">
                               <Eye className="w-3.5 h-3.5" />
                             </a>

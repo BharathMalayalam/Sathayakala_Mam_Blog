@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { getApiUrl } from '../utils';
 import {
   FolderOpen, Search, ChevronRight, BookOpen,
   GraduationCap, ArrowLeft, Loader2, FolderX, Plus
@@ -33,7 +34,7 @@ export default function BlogPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch('/api/folders')
+    fetch(getApiUrl('/api/folders'))
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data)) setFolders(data);

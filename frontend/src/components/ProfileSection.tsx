@@ -5,9 +5,9 @@
 
 import { motion } from 'motion/react';
 import { ShieldCheck, Sparkles } from 'lucide-react';
+import profileImg from '../assets/images/professor_headshot_1784005958601.jpg';
 
 export default function ProfileSection() {
-  const profileImg = '/src/assets/images/professor_headshot_1784005958601.jpg';
 
   return (
     <div className="relative w-full max-w-[380px] aspect-square mx-auto flex items-center justify-center p-6 select-none" id="profile-container">

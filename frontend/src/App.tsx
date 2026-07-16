@@ -24,11 +24,15 @@ import { CONTACT_INFO } from './data';
 
 // Component imports
 import DropdownMenu from './components/DropdownMenu';
+import ProfileSection from './components/ProfileSection';
 
 // Page imports
 import BlogPage from './pages/BlogPage';
 import FolderPage from './pages/FolderPage';
 import AdminPage from './pages/AdminPage';
+
+// Asset imports
+import classroomBg from './assets/images/classroom_bg.jpg';
 
 export default function App() {
   const navigate = useNavigate();
@@ -68,7 +72,7 @@ export default function App() {
       <Route path="/blog/folder/:id" element={<FolderPage />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/" element={
-        <div className="min-h-screen flex flex-col relative overflow-x-hidden font-sans text-white bg-cover bg-center" style={{ backgroundImage: 'url("/src/assets/images/classroom_bg.jpg")' }}>
+        <div className="min-h-screen flex flex-col relative overflow-x-hidden font-sans text-white bg-cover bg-center" style={{ backgroundImage: `url(${classroomBg})` }}>
           {/* Backdrop overlay for text contrast */}
           <div className="absolute inset-0 bg-slate-950/75 z-0" />
  
@@ -176,6 +180,9 @@ export default function App() {
                 </motion.div>
               </motion.div>
             </div>
+
+            {/* Right side: Interactive Profile Image Display */}
+            <ProfileSection />
           </main>
  
           {/* FIXED BLOG CIRCULAR BUTTON IN BOTTOM RIGHT CORNER (Desktop only) */}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { getApiUrl } from '../utils';
 import {
   FolderOpen, ChevronRight, ArrowLeft, Download,
   FileText, Image, Eye, X, Loader2, Filter,
@@ -48,7 +49,7 @@ export default function FolderPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/folders/${id}`)
+    fetch(getApiUrl(`/api/folders/${id}`))
       .then(r => r.json())
       .then(d => {
         if (d.folder) setData(d);
@@ -65,7 +66,7 @@ export default function FolderPage() {
 
   const handleDownload = (file: FileItem) => {
     const a = document.createElement('a');
-    a.href = file.fileUrl;
+    a.href = getApiUrl(file.fileUrl);
     a.download = file.fileName;
     a.target = '_blank';
     document.body.appendChild(a);
@@ -347,7 +348,7 @@ export default function FolderPage() {
               <div className="flex-1 overflow-auto bg-slate-50 p-4">
                 {viewer.fileType === 'pdf' ? (
                   <iframe
-                    src={viewer.fileUrl}
+                    src={getApiUrl(viewer.fileUrl)}
                     className="w-full rounded-lg border border-slate-200"
                     style={{ height: 'calc(90vh - 120px)' }}
                     title={viewer.title}
@@ -355,7 +356,7 @@ export default function FolderPage() {
                 ) : (
                   <div className="flex items-center justify-center h-full min-h-[400px]">
                     <img
-                      src={viewer.fileUrl}
+                      src={getApiUrl(viewer.fileUrl)}
                       alt={viewer.title}
                       className="max-w-full max-h-[70vh] object-contain rounded-xl shadow-lg"
                     />
