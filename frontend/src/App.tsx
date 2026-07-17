@@ -128,7 +128,7 @@ export default function App() {
                         </div>
                         <div className="space-y-0.5">
                           <p className="text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 leading-none">Location</p>
-                          <p className="text-slate-600 leading-normal">IRTT, Erode, Tamil Nadu</p>
+                          <p className="text-slate-600 leading-normal">GCE, Erode, Tamil Nadu</p>
                         </div>
                       </div>
                     </div>
