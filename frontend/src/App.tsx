@@ -31,7 +31,7 @@ import FolderPage from './pages/FolderPage';
 import AdminPage from './pages/AdminPage';
 
 // Asset imports
-import classroomBg from './assets/images/classroom_bg.jpg';
+import classroomBg from './assets/images/NammaGCEE2.webp';
 
 export default function App() {
   const navigate = useNavigate();

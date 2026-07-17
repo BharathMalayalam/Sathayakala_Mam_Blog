@@ -66,7 +66,7 @@ export default function BlogPage() {
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-extrabold text-slate-900 font-display leading-none">M. Sathyakala<span className="text-blue-600 font-bold">.</span></p>
+              <p className="text-sm font-extrabold text-slate-900 font-display leading-none">Dr.M. Sathyakala<span className="text-blue-600 font-bold">.</span></p>
               <p className="text-[10px] text-slate-400 font-mono mt-0.5">Academic Library</p>
             </div>
           </div>
