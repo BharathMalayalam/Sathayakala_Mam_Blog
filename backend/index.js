@@ -36,6 +36,9 @@ app.use(compression());
 app.use(cors());
 app.use(express.json());
 
+// Serve static frontend files from Vite build
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
 // Serve static uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -44,6 +47,14 @@ app.use('/api/auth', authRouter);
 app.use('/api/folders', foldersRouter);
 app.use('/api/upload', filesRouter);
 app.use('/api/files', filesRouter);
+
+// Fallback all other GET requests to the frontend's index.html (SPA routing)
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
+    return res.status(404).json({ error: 'Not Found' });
+  }
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 // Enable DNS Overrides ONLY in local development / non-production environments.
 // Render production environments run in cloud data centers with fast, reliable native DNS resolution,
