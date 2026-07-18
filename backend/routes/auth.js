@@ -10,12 +10,19 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Invalid input format' });
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
     // Find user in database
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: trimmedEmail }).lean();
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }

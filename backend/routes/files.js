@@ -32,11 +32,19 @@ const router = express.Router();
 // POST /api/upload/:folderId — upload file to a folder (admin)
 router.post('/:folderId', requireAuth, upload.single('file'), async (req, res) => {
   try {
-    const folder = await Folder.findById(req.params.folderId);
+    const folder = await Folder.findById(req.params.folderId).lean();
     if (!folder) return res.status(404).json({ error: 'Folder not found' });
 
     const { title, description, linkUrl } = req.body;
-    if (!title) return res.status(400).json({ error: 'Title is required' });
+    if (typeof title !== 'string' || !title.trim()) {
+      return res.status(400).json({ error: 'Title is required and must be a string' });
+    }
+    if (description !== undefined && typeof description !== 'string') {
+      return res.status(400).json({ error: 'Description must be a string' });
+    }
+    if (linkUrl !== undefined && typeof linkUrl !== 'string') {
+      return res.status(400).json({ error: 'Link URL must be a string' });
+    }
 
     let fileUrl = '';
     let fileName = '';
@@ -73,7 +81,7 @@ router.post('/:folderId', requireAuth, upload.single('file'), async (req, res) =
 // DELETE /api/files/:id — admin
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
-    const file = await File.findByIdAndDelete(req.params.id);
+    const file = await File.findByIdAndDelete(req.params.id).lean();
     if (!file) return res.status(404).json({ error: 'File not found' });
     if (file.fileUrl && file.fileUrl.startsWith('/uploads/')) {
       const filePath = path.join(uploadsDir, path.basename(file.fileUrl));

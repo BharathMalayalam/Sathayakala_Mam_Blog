@@ -8,11 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, LogIn, Menu, FolderOpen } from 'lucide-react';
 
-interface DropdownMenuProps {
-  onNavigate: (section: 'home' | 'about' | 'blog' | 'contact' | 'signin') => void;
-}
-
-export default function DropdownMenu({ onNavigate }: DropdownMenuProps) {
+export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,7 +66,6 @@ export default function DropdownMenu({ onNavigate }: DropdownMenuProps) {
               <button
                 id="nav-home-btn"
                 onClick={() => handleItemClick(() => {
-                  onNavigate('home');
                   navigate('/');
                 })}
                 className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors text-left font-sans cursor-pointer group"

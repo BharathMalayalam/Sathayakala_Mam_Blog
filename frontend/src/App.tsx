@@ -1,43 +1,25 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { useState, useRef } from 'react';
+import { useState, useRef, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   GraduationCap,
-  Brain,
-  BookOpen,
-  Phone,
-  Mail,
-  ArrowUpRight,
-  Sparkles,
-  Copy,
-  BookMarked,
-  Briefcase
+  ArrowUpRight
 } from 'lucide-react';
-
-// Data imports
-import { CONTACT_INFO } from './data';
 
 // Component imports
 import DropdownMenu from './components/DropdownMenu';
 
-// Page imports
-import BlogPage from './pages/BlogPage';
-import FolderPage from './pages/FolderPage';
-import AdminPage from './pages/AdminPage';
+// Lazy load pages for code splitting
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const FolderPage = lazy(() => import('./pages/FolderPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 // Asset imports
-import classroomBg from './assets/images/blog_bg2.jpg';
+import classroomBg from './assets/images/blog_bg2.webp';
 
 export default function App() {
   const navigate = useNavigate();
 
-  // Copy status feedback states
-  const [copiedType, setCopiedType] = useState<'email' | 'phone' | null>(null);
   const [showAbout, setShowAbout] = useState(false);
   const aboutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -55,22 +37,15 @@ export default function App() {
     }, 250); // 250ms delay
   };
 
-  const handleCopy = (text: string, type: 'email' | 'phone') => {
-    navigator.clipboard.writeText(text);
-    setCopiedType(type);
-    setTimeout(() => setCopiedType(null), 2000);
-  };
-
-  const handleDropdownNavigate = (_section: string) => {
-    // Navigation handled by DropdownMenu internally via useNavigate
-  };
-
   return (
-    <Routes>
-      <Route path="/blog" element={<BlogPage />} />
-      <Route path="/blog/folder/:id" element={<FolderPage />} />
-      <Route path="/admin" element={<AdminPage />} />
-      <Route path="/" element={
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white gap-3 font-sans">
+        <div className="w-8 h-8 rounded-full border-4 border-rose-500 border-t-transparent animate-spin" />
+        <span className="text-sm font-semibold tracking-wide text-slate-400">Loading...</span>
+      </div>
+    }>
+      <Routes>
+        <Route path="/" element={
         <div className="min-h-screen flex flex-col relative overflow-x-hidden font-sans text-white bg-cover bg-center" style={{ backgroundImage: `url(${classroomBg})` }}>
           {/* Backdrop overlay for text contrast */}
           <div className="absolute inset-0 bg-slate-950/75 z-0" />
@@ -140,7 +115,7 @@ export default function App() {
             {/* Right: Dropdown Menu */}
             <div className="flex items-center gap-6">
               <span onClick={() => navigate('/blog')} className="cursor-pointer hover:text-slate-300 transition-colors font-semibold text-slate-200 text-l hover:underline underline-offset-6">Blogs</span>
-              <DropdownMenu onNavigate={handleDropdownNavigate} />
+              <DropdownMenu />
             </div>
           </header>
  
@@ -206,6 +181,10 @@ export default function App() {
           </footer>
         </div>
       } />
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/folder/:id" element={<FolderPage />} />
+      <Route path="/admin" element={<AdminPage />} />
     </Routes>
+  </Suspense>
   );
 }
