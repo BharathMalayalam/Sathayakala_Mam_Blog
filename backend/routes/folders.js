@@ -94,8 +94,8 @@ router.get('/', async (req, res) => {
       };
     });
     
-    // Add public cache control header for 5 minutes (300 seconds) to avoid redundant DB requests on navigation
-    res.set('Cache-Control', 'public, max-age=300');
+    // Set Cache-Control to no-store to prevent browser caching of dynamic folders
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.json(foldersWithCount);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -147,8 +147,8 @@ router.get('/:id', async (req, res) => {
 
     const folderPath = await buildFolderPath(req.params.id);
 
-    // Cache-Control headers for specific folder pages
-    res.set('Cache-Control', 'public, max-age=300');
+    // Set Cache-Control to no-store to prevent browser caching of dynamic folder pages
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.json({ folder, files, subfolders: subfoldersWithCount, path: folderPath });
   } catch (err) {
     res.status(500).json({ error: err.message });
