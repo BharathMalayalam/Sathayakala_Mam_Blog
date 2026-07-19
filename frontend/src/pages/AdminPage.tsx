@@ -5,11 +5,68 @@ import { getApiUrl } from '../utils';
 import {
   LogIn, LogOut, FolderPlus, Upload, Trash2, FolderOpen,
   FileText, Image, CheckCircle, XCircle, Loader2, GraduationCap,
-  Eye, ChevronRight, Shield, AlertCircle, X, Link2
+  Eye, ChevronRight, Shield, AlertCircle, X, Link2, Video, Music, File
 } from 'lucide-react';
 
 interface Folder { _id: string; name: string; description: string; fileCount: number; subfolderCount?: number; parentFolderId?: string | null; }
 interface FileItem { _id: string; title: string; fileType: string; fileName: string; fileUrl: string; }
+
+function getFileDetails(file: FileItem) {
+  const ext = (file.fileName.split('.').pop() || '').toLowerCase();
+  const typeOrExt = (file.fileType || ext).toLowerCase();
+
+  if (typeOrExt === 'pdf') {
+    return {
+      category: 'pdf',
+      colorClass: 'from-red-400 to-rose-500',
+      badgeColor: 'bg-red-50 text-red-600',
+      iconType: 'pdf',
+    };
+  }
+  
+  if (['image', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(typeOrExt)) {
+    return {
+      category: 'image',
+      colorClass: 'from-blue-400 to-indigo-500',
+      badgeColor: 'bg-blue-50 text-blue-600',
+      iconType: 'image',
+    };
+  }
+
+  if (['mp4', 'webm', 'ogg', 'mov'].includes(typeOrExt)) {
+    return {
+      category: 'video',
+      colorClass: 'from-purple-400 to-pink-500',
+      badgeColor: 'bg-purple-50 text-purple-600',
+      iconType: 'video',
+    };
+  }
+
+  if (['mp3', 'wav', 'aac', 'flac'].includes(typeOrExt)) {
+    return {
+      category: 'audio',
+      colorClass: 'from-emerald-400 to-teal-500',
+      badgeColor: 'bg-emerald-50 text-emerald-600',
+      iconType: 'audio',
+    };
+  }
+
+  if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'md'].includes(typeOrExt)) {
+    return {
+      category: 'document',
+      colorClass: 'from-amber-400 to-orange-500',
+      badgeColor: 'bg-amber-50 text-amber-600',
+      iconType: 'document',
+    };
+  }
+
+  return {
+    category: 'other',
+    colorClass: 'from-slate-400 to-slate-500',
+    badgeColor: 'bg-slate-50 text-slate-600',
+    iconType: 'other',
+  };
+}
 
 type Toast = { id: number; message: string; type: 'success' | 'error' };
 
@@ -65,8 +122,27 @@ export default function AdminPage() {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
   };
 
-  const authFetch = (url: string, opts: RequestInit = {}) =>
-    fetch(getApiUrl(url), { ...opts, headers: { ...((opts.headers as Record<string, string>) || {}), Authorization: `Bearer ${token}` } });
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token');
+    setToken('');
+    setFolders([]);
+    setOpenFolder(null);
+  };
+
+  const authFetch = async (url: string, opts: RequestInit = {}) => {
+    const res = await fetch(getApiUrl(url), {
+      ...opts,
+      headers: {
+        ...((opts.headers as Record<string, string>) || {}),
+        Authorization: `Bearer ${token}`
+      }
+    });
+    if (res.status === 401) {
+      handleLogout();
+      throw new Error('Session expired or unauthorized. Please log in again.');
+    }
+    return res;
+  };
 
   const loadFolders = () => {
     setFoldersLoading(true);
@@ -97,13 +173,6 @@ export default function AdminPage() {
     } finally {
       setLoginLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    setToken('');
-    setFolders([]);
-    setOpenFolder(null);
   };
 
   const handleCreateFolder = async (e: React.FormEvent) => {
@@ -447,9 +516,9 @@ export default function AdminPage() {
                   <Upload className="w-6 h-6 text-slate-400 group-hover:text-blue-500 transition-colors" />
                   <span className="text-xs text-slate-500 text-center">
                     {fileObj ? <span className="text-blue-600 font-semibold">{fileObj.name}</span>
-                      : <>Click to select<br /><span className="text-slate-400">PDF, JPG, PNG (max 25MB)</span></>}
+                      : <>Click to select<br /><span className="text-slate-400">Any file format (max 25MB)</span></>}
                   </span>
-                  <input ref={fileInputRef} type="file" accept=".pdf,image/*" className="sr-only"
+                  <input ref={fileInputRef} type="file" className="sr-only"
                     onChange={e => setFileObj(e.target.files?.[0] ?? null)} />
                 </label>
               ) : (
@@ -632,7 +701,6 @@ export default function AdminPage() {
                               <input 
                                 ref={subFileInputRef}
                                 type="file" 
-                                accept=".pdf,image/*" 
                                 className="sr-only"
                                 onChange={e => setSubFileObj(e.target.files?.[0] ?? null)} 
                               />
@@ -711,27 +779,35 @@ export default function AdminPage() {
                       <p className="text-xs text-slate-400 text-center py-6">No files in this folder yet.</p>
                     )}
                     <div className="flex flex-col gap-2">
-                      {openFolder.files.map(file => (
-                        <div key={file._id} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl hover:border-slate-200 transition-colors">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${file.fileType === 'pdf' ? 'bg-red-100' : 'bg-blue-100'}`}>
-                            {file.fileType === 'pdf' ? <FileText className="w-4 h-4 text-red-500" /> : <Image className="w-4 h-4 text-blue-500" />}
+                      {openFolder.files.map(file => {
+                        const details = getFileDetails(file);
+                        return (
+                          <div key={file._id} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl hover:border-slate-200 transition-colors">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-gradient-to-br ${details.colorClass} text-white shadow-sm`}>
+                              {details.iconType === 'pdf' && <FileText className="w-4 h-4" />}
+                              {details.iconType === 'image' && <Image className="w-4 h-4" />}
+                              {details.iconType === 'video' && <Video className="w-4 h-4" />}
+                              {details.iconType === 'audio' && <Music className="w-4 h-4" />}
+                              {details.iconType === 'document' && <FileText className="w-4 h-4" />}
+                              {details.iconType === 'other' && <File className="w-4 h-4" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-slate-800 truncate">{file.title}</p>
+                              <p className="text-[10px] text-slate-400 truncate">{file.fileName}</p>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <a href={getApiUrl(file.fileUrl)} target="_blank" rel="noreferrer"
+                                className="p-1.5 hover:bg-blue-100 rounded-md transition-colors text-slate-300 hover:text-blue-500 cursor-pointer" title="View file">
+                                <Eye className="w-3.5 h-3.5" />
+                              </a>
+                              <button onClick={() => handleDeleteFile(file)}
+                                className="p-1.5 hover:bg-red-100 rounded-md transition-colors text-slate-300 hover:text-red-500 cursor-pointer" title="Delete file">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-slate-800 truncate">{file.title}</p>
-                            <p className="text-[10px] text-slate-400 truncate">{file.fileName}</p>
-                          </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <a href={getApiUrl(file.fileUrl)} target="_blank" rel="noreferrer"
-                              className="p-1.5 hover:bg-blue-100 rounded-md transition-colors text-slate-300 hover:text-blue-500 cursor-pointer" title="View file">
-                              <Eye className="w-3.5 h-3.5" />
-                            </a>
-                            <button onClick={() => handleDeleteFile(file)}
-                              className="p-1.5 hover:bg-red-100 rounded-md transition-colors text-slate-300 hover:text-red-500 cursor-pointer" title="Delete file">
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
